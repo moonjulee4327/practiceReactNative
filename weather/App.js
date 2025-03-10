@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
+import { Fontisto } from "@expo/vector-icons";
 
 const { width:SCREEN_WIDTH } = Dimensions.get("window");
 const WEATHER_API_KEY = `Your API KEY`;
+
+const icons = {
+  Clouds: "cloudy",
+  Clear: "day-sunny",
+  Atmosphere: "cloudy-gusts",
+  Snow: "snow",
+  Rain: "rains",
+  Drizzle: "rain",
+  Thunderstorm: "lightning",
+};
 
 export default function App() {
   const [city, setCity] = useState("Loading...");
@@ -24,7 +35,6 @@ export default function App() {
       `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}&units=metric`
     );
     const json = await response.json();
-    console.log(json.list);
     setDays(json.list);
   };
   useEffect(() => {
@@ -52,9 +62,27 @@ export default function App() {
         ) : (
           days.map((day, index) => (
             <View key={index} style={styles.day}>
-              <Text style={styles.temp}>{parseFloat(day.main.temp).toFixed(1)}</Text>
-              <Text style={styles.description}>{day.weather[0].main}</Text>
-              <Text style={styles.tinyText}>{day.weather[0].description}</Text>
+              <View style={{ 
+                flexDirection: "column", 
+                alignItems:"center", 
+                width:"100%", 
+                justifyContent: "space-between" 
+                }}
+              >
+                <Fontisto name={icons[day.weather[0].main]} size={68} color="black" />
+                <View style={{ flexDirection: "row", position:"relative", }}>
+                  <Text style={styles.temp}>
+                    {parseFloat(day.main.temp).toFixed(1)}
+                  </Text>
+                  <Text style={{ top: 60, fontSize: 20 }}>°C</Text>
+                </View>
+              </View>
+              <Text style={styles.description}>
+                {day.weather[0].main}
+              </Text>
+              <Text style={styles.tinyText}>
+                {day.weather[0].description}
+              </Text>
             </View>
           ))
         )}
